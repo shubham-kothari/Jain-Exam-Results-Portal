@@ -1,0 +1,117 @@
+.certificate-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f9f7f7;
+  }
+
+  .certificate-content{
+    margin-top: -28.5rem;
+  }
+  img{
+    width: 100%;
+  }
+  .certificate {
+    // border: 5px solid #9c27b0;
+    // padding: 40px;
+    background-color: white;
+    text-align: center;
+    max-width: 700px;
+    width: 90%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Georgia', serif;
+    border-radius: 10px;
+  }
+  
+  .certificate h1 {
+    color: #9c27b0;
+    margin-bottom: 20px;
+    font-size: 22px;
+  }
+  
+  .cert-name {
+    font-size: 28px;
+    color: #333;
+    margin: 5px 0;
+  }
+  
+  .cert-marks {
+    font-size: 24px;
+    color: #4caf50;
+    margin: 7px 0;
+  }
+  
+  .signature-section {
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+/* Add Media Queries to adjust styles on smaller screens */
+@media screen and (max-width: 768px) {
+  .certificate {
+    width: 95%;
+    /* Use 95% width on tablets */
+    padding: 15px;
+    /* Reduce padding on smaller screens */
+  }
+
+  .certificate h1 {
+    font-size: 2em;
+    /* Smaller font size on smaller screens */
+  }
+
+  .cert-name {
+    font-size: 1.5em;
+  }
+
+  .cert-marks {
+    font-size: 1.2em;
+  }
+
+  .signature-section {
+    font-size: 0.9em;
+    /* Smaller font size for signatures */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .certificate {
+    width: 100%;
+    /* Use 100% width on mobile */
+    padding: 10px;
+    /* Even smaller padding */
+  }
+
+  .certificate-wrapper {
+    height: 25rem;
+  }
+
+  .certificate-content {
+    margin-top: -14rem;
+  }
+
+  .certificate h1{
+    font-size: 1.1em;
+    margin: 0;
+    /* Even smaller font size */
+  }
+  p{
+    margin: 0;
+  }
+
+  .cert-name {
+    font-size: 0.9em;
+    margin: 0;
+  }
+
+  .cert-marks {
+    font-size: 0.7em;
+    margin: 0;
+  }
+
+  .signature-section {
+    font-size: 0.4em;
+    margin: 0;
+  }
+}  
