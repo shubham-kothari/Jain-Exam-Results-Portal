@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import Header from "../component/header";
+import "./Result.scss";
 
 const Result = () => {
     const [area, setArea] = useState("");
@@ -77,7 +78,6 @@ const Result = () => {
 
     return (
         <div className="container-result">
-
             <div className="pdf-wrapper" ref={resultRef}>
                 <Header />
                 <select className="dropdown" onChange={(e) => setArea(e.target.value)}>
@@ -88,11 +88,8 @@ const Result = () => {
                         </option>
                     ))}
                 </select>
-            </div>
 
-
-            {areaSelected && (
-                <div>
+                {areaSelected && (
                     <div className="name-selection">
                         <h3 className="select-title">अपना नाम चुनें</h3>
                         <select 
@@ -108,55 +105,52 @@ const Result = () => {
                             ))}
                         </select>
                     </div>
-                    <div className="pdf-wrapper" ref={resultRef}>
-                        {showPDFHeader && (
-                            <div className="container-pdf">
-                                <p className="main-title-pdf">णमो णाणस्स</p>
-                                <h2 className="subtitle">
-                                    श्री अखिल भारतीय सुधर्म जैन संस्कृति रक्षक संघ छ. ग. शाखा द्वारा आयोजित महावीर जयंती की परीक्षा के परिणाम
-                                </h2>
-                            </div>
-                        )}
+                )}
 
+                <div className="result-content">
+                    {showPDFHeader && (
+                        <div className="container-pdf">
+                            <p className="main-title-pdf">णमो णाणस्स</p>
+                            <h2 className="subtitle">
+                                श्री अखिल भारतीय सुधर्म जैन संस्कृति रक्षक संघ छ. ग. शाखा द्वारा आयोजित महावीर जयंती की परीक्षा के परिणाम
+                            </h2>
+                        </div>
+                    )}
 
-                        {filteredData.length > 0 ? (
-                            <table className="result-table">
-                                <thead>
-                                    <tr>
-                                        <th>S. No.</th>
-                                        <th>Name</th>
-                                        <th>Area</th>
-
-                                        {/* <th>Mobile Number</th> */}
-                                        <th>Marks</th>
+                    {filteredData.length > 0 ? (
+                        <table className="result-table">
+                            <thead>
+                                <tr>
+                                    <th>S. No.</th>
+                                    <th>Name</th>
+                                    <th>Area</th>
+                                    <th>Marks</th>
+                                </tr>
+                            </thead>
+                            <tbody style={{ color: 'black' }}>
+                                {filteredData.map((item, index) => (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        <td>{item.name}</td>
+                                        <td>{item.area}</td>
+                                        <td>{item.marks}</td>
                                     </tr>
-                                </thead>
-                                <tbody style={{ color: 'black' }}>
-                                    {filteredData.map((item, index) => (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td>{item.name}</td>
-                                            <td>{item.area}</td>
-                                            {/* <td>{item.moNumber}</td> */}
-                                            <td>{item.marks}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <div className="no-data">
-                                No Data Found for <b>{area}</b>
-                            </div>
-                        )}
-                    </div>
-
-                    {filteredData.length > 0 && (
-                        <button className="download-btn" onClick={downloadPDF}>
-                            डाउनलोड करें (Download PDF)
-                        </button>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="no-data">
+                            No Data Found for <b>{area}</b>
+                        </div>
                     )}
                 </div>
-            )}
+
+                {filteredData.length > 0 && (
+                    <button className="download-btn" onClick={downloadPDF}>
+                        डाउनलोड करें (Download PDF)
+                    </button>
+                )}
+            </div>
         </div>
     );
 
