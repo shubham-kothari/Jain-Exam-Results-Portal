@@ -5,7 +5,9 @@ import Header from "../component/header";
 
 const Result = () => {
     const [area, setArea] = useState("");
+    const [name, setName] = useState("");
     const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
     const [areaSelected, setAreaSelected] = useState(false);
     const resultRef = useRef(); // For PDF generation
 
@@ -19,15 +21,35 @@ const Result = () => {
     useEffect(() => {
         if (area) {
             setAreaSelected(true);
+            setName("");
             axios
                 .get(`${process.env.REACT_APP_API_URL}/data?area=${area}`)
-                .then((response) => setData(response.data.data))
+                .then((response) => {
+                    console.log('API Response:', response.data);
+                    if (response.data && response.data.data) {
+                        setData(response.data.data);
+                        setFilteredData(response.data.data);
+                    } else {
+                        console.error('Unexpected API response format');
+                        setData([]);
+                        setFilteredData([]);
+                    }
+                })
                 .catch((error) => {
-                    console.error(error);
+                    console.error('API Error:', error);
                     setData([]);
+                    setFilteredData([]);
                 });
         }
     }, [area]);
+
+    useEffect(() => {
+        if (name) {
+            setFilteredData(data.filter(item => item.name === name));
+        } else {
+            setFilteredData(data);
+        }
+    }, [name, data]);
 
     const downloadPDF = () => {
         setShowPDFHeader(true);
@@ -58,8 +80,6 @@ const Result = () => {
 
             <div className="pdf-wrapper" ref={resultRef}>
                 <Header />
-                <h3 className="select-title">अपना क्षेत्र चुनें</h3>
-
                 <select className="dropdown" onChange={(e) => setArea(e.target.value)}>
                     <option value="">Select Area</option>
                     {areas.map((areaName, index) => (
@@ -73,6 +93,21 @@ const Result = () => {
 
             {areaSelected && (
                 <div>
+                    <div className="name-selection">
+                        <h3 className="select-title">अपना नाम चुनें</h3>
+                        <select 
+                            className="dropdown" 
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        >
+                            <option value="">Select Name</option>
+                            {data.map((item, index) => (
+                                <option key={index} value={item.name}>
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                     <div className="pdf-wrapper" ref={resultRef}>
                         {showPDFHeader && (
                             <div className="container-pdf">
@@ -84,7 +119,7 @@ const Result = () => {
                         )}
 
 
-                        {data.length > 0 ? (
+                        {filteredData.length > 0 ? (
                             <table className="result-table">
                                 <thead>
                                     <tr>
@@ -97,7 +132,7 @@ const Result = () => {
                                     </tr>
                                 </thead>
                                 <tbody style={{ color: 'black' }}>
-                                    {data.map((item, index) => (
+                                    {filteredData.map((item, index) => (
                                         <tr key={index}>
                                             <td>{index + 1}</td>
                                             <td>{item.name}</td>
@@ -115,7 +150,7 @@ const Result = () => {
                         )}
                     </div>
 
-                    {data.length > 0 && (
+                    {filteredData.length > 0 && (
                         <button className="download-btn" onClick={downloadPDF}>
                             डाउनलोड करें (Download PDF)
                         </button>

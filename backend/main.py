@@ -135,6 +135,8 @@ async def get_all_data(area: str = None):
     conn = sqlite3.connect('test.db')
     cursor = conn.cursor()
     
+    print(f"\nDEBUG: Querying for area: {area}")  # Debug log
+    
     if area:
         cursor.execute('''
             SELECT r.name, c.name as area, r.marks 
@@ -150,5 +152,23 @@ async def get_all_data(area: str = None):
         ''')
         
     results = cursor.fetchall()
+    
+    print("DEBUG: Query results:")  # Debug log
+    for row in results:
+        print(row)
+    
+    # Convert results to proper dictionary format with proper string encoding
+    formatted_results = []
+    for row in results:
+        formatted_results.append({
+            "name": row[0].strip(),  # Remove any extra whitespace
+            "area": row[1].strip(),
+            "marks": row[2]
+        })
+    
     conn.close()
-    return {"data": results}
+    return {
+        "data": formatted_results,
+        "status": "success",
+        "count": len(formatted_results)
+    }
