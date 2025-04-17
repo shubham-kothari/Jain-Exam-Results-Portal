@@ -74,7 +74,11 @@ const CertificatePage = () => {
         <select
           id="city"
           value={selectedCity}
-          onChange={(e) => setSelectedCity(e.target.value)}
+          onChange={(e) => {
+            setSelectedCity(e.target.value);
+            setSelectedCandidate(null);
+            setPdfUrl('');
+          }}
         >
           <option value="">क्षेत्र</option>
           {cities.map((city) => (
