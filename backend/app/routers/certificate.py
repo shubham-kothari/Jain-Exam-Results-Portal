@@ -113,7 +113,7 @@ async def generate_certificate(name: str, marks: str):
             return StreamingResponse(
                 pdf_buffer,
                 media_type="application/pdf",
-                headers={"Content-Disposition": "attachment; filename=certificate.pdf"}
+                headers={"Content-Disposition": f"attachment; filename=Certificate.pdf"}
             )
             
     except Exception as e:

@@ -98,6 +98,7 @@ const CertificatePage = () => {
             onChange={(e) => {
               const candidate = candidates.find(c => c.id === parseInt(e.target.value));
               setSelectedCandidate(candidate);
+              setPdfUrl(''); // Reset PDF URL when selecting new name
             }}
           >
             <option value="">नाम</option>
@@ -114,12 +115,29 @@ const CertificatePage = () => {
         <div className="candidate-info">
           <p>नाम: {selectedCandidate.name}</p>
           <p>अंक: {selectedCandidate.marks}</p>
-          <button 
-            onClick={handleGenerateCertificate}
-            disabled={loading}
-          >
-            {loading ? 'प्रमाणपत्र जनरेट हो रहा है ...' : 'प्रमाणपत्र जनरेट करें'}
-          </button>
+          {!pdfUrl ? (
+            <button 
+              onClick={handleGenerateCertificate}
+              disabled={loading}
+            >
+              {loading ? 'प्रमाणपत्र जनरेट हो रहा है ...' : 'प्रमाणपत्र जनरेट करें'}
+            </button>
+          ) : (
+            <button 
+              onClick={() => {
+                const link = document.createElement('a');
+                link.href = pdfUrl;
+                link.download = `${selectedCandidate.name}_Certificate.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+              className="download-btn"
+              style={{backgroundColor: '#4285f4', color: 'white'}}
+            >
+              प्रमाणपत्र डाउनलोड करें
+            </button>
+          )}
         </div>
       )}
 
