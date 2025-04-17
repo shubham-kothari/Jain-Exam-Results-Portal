@@ -38,7 +38,7 @@ def get_font_for_text(text, size):
             try:
                 return ImageFont.truetype("arialbd.ttf", size)
             except:
-                return ImageFont.load_default()
+                return ImageFont.load_default(size=size)
 
 def get_fonts():
     """Load fonts matching frontend styles"""
@@ -65,8 +65,8 @@ def calculate_positions(img_width, img_height):
 async def generate_certificate(name: str, marks: str):
     try:
         # Load appropriate fonts based on text content
-        name_font = get_font_for_text(name, 45)  # Use 45px size for name
-        marks_font = get_font_for_text(marks, 35)  # Use 35px size for marks
+        name_font = get_font_for_text(name, 55)  # Use 45px size for name
+        marks_font = get_font_for_text(marks, 38)  # Use 35px size for marks
         
         # Open certificate template
         with Image.open(CERTIFICATE_TEMPLATE_PATH) as img:

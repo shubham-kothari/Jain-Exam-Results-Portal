@@ -6,17 +6,17 @@ ENV PYTHONPATH=/app
 
 COPY pyproject.toml .
 
-RUN apt-get update && \
+RUN echo "deb http://deb.debian.org/debian bookworm contrib non-free" >> /etc/apt/sources.list && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
         python3-dev \
         libssl-dev \
         fonts-oldstandard \
         fonts-noto \
-        fonts-noto-cjk \
-        fonts-noto-color-emoji \
-        fonts-noto-extra && \
-    rm -rf /var/lib/apt/lists/*
+        ttf-mscorefonts-installer && \
+    rm -rf /var/lib/apt/lists/* && \
+    fc-cache -fv
 
 RUN pip install --no-cache-dir -e .
 
