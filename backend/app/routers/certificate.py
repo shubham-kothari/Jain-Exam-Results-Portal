@@ -12,34 +12,44 @@ router = APIRouter(
 # Certificate template path
 CERTIFICATE_TEMPLATE_PATH = os.path.join(
     os.path.dirname(__file__), 
-    "../../../frontend/src/photo/Certificate.png"
+    "../data/Certificate.png"
 )
 
 def get_fonts():
-    """Try to load preferred fonts, fallback to defaults"""
+    """Load fonts matching frontend styles"""
     try:
-        name_font = ImageFont.truetype("OldStandardTT-Regular.ttf", 42)
-        marks_font = ImageFont.truetype("OldStandardTT-Regular.ttf", 18)
+        # Try to load semi-bold variant first
+        name_font = ImageFont.truetype("OldStandardTT-Bold.ttf", 45)
+        marks_font = ImageFont.truetype("OldStandardTT-Bold.ttf", 35)  # Increased from 18 to 24
     except:
         try:
-            name_font = ImageFont.truetype("arial.ttf", 42)
-            marks_font = ImageFont.truetype("arial.ttf", 42)
+            # Fallback to regular if semi-bold not available
+            name_font = ImageFont.truetype("OldStandardTT-Regular.ttf", 45)
+            marks_font = ImageFont.truetype("OldStandardTT-Regular.ttf", 35)  # Increased from 18 to 24
         except:
-            name_font = ImageFont.load_default()
-            marks_font = ImageFont.load_default()
+            try:
+                # Final fallback to Arial Bold
+                name_font = ImageFont.truetype("arialbd.ttf", 45)
+                marks_font = ImageFont.truetype("arialbd.ttf", 35)  # Increased from 18 to 24
+            except:
+                # Absolute fallback to default
+                name_font = ImageFont.load_default()
+                marks_font = ImageFont.load_default()
     return name_font, marks_font
 
 def calculate_positions(img_width, img_height):
-    """Calculate text positions based on percentages from frontend"""
-    name_x = int(img_width * 0.42)  # 15% from top
-    name_y = int(img_height * 0.37)  # 15% from top
-
-    marks_x = int(img_width * 0.575)  # 4.8% below name
-    marks_y = int(img_height * 0.523)  # 4.8% below name
-
+    """Calculate exact positions matching frontend layout"""
+    # Name position - perfectly centered
+    name_x = int(img_width * 0.5)  # Center horizontally
+    name_y = int(img_height * 0.37)  # 35% from top
+    
+    # Marks position - 10% from left, 48% from top (matches frontend exactly)
+    marks_x = int(img_width * 0.58)  # 10% from left
+    marks_y = int(img_height * 0.54)  # 48% from top
+    
     return {
-        'name': (name_x, name_y),  # 10% from left
-        'marks': (marks_x, marks_y)  # 10% from left
+        'name': (name_x, name_y),
+        'marks': (marks_x, marks_y)
     }
 
 @router.post("/generate")
@@ -56,8 +66,10 @@ async def generate_certificate(name: str, marks: str):
             positions = calculate_positions(img.width, img.height)
             
             # Draw name and marks with different styles
+            # Calculate text width for perfect centering
+            text_width = name_font.getlength(name)
             draw.text(
-                positions['name'], 
+                (img.width/2 - text_width/2, positions['name'][1]),  # Center horizontally based on text length
                 name, 
                 font=name_font, 
                 fill=(6, 6, 132)  # Dark blue
@@ -66,7 +78,8 @@ async def generate_certificate(name: str, marks: str):
                 positions['marks'], 
                 marks, 
                 font=marks_font, 
-                fill=(0, 0, 0)  # Black
+                fill=(6, 6, 132),  # Same dark blue as name
+                anchor="mm"  # Center text at position
             )
             
             # Save to bytes buffer
