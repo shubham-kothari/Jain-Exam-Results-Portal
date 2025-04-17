@@ -118,7 +118,7 @@ const CertificatePage = () => {
             onClick={handleGenerateCertificate}
             disabled={loading}
           >
-            {loading ? 'Generating...' : 'प्रमाणपत्र जनरेट करें'}
+            {loading ? 'प्रमाणपत्र जनरेट हो रहा है ...' : 'प्रमाणपत्र जनरेट करें'}
           </button>
         </div>
       )}
