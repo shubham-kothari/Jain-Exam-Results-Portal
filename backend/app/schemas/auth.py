@@ -20,4 +20,4 @@ class User(UserBase):
     disabled: Optional[bool] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from ..db import database
+from ..db import models
 from ..schemas import auth
 from ..utils.auth import (
     authenticate_user,
@@ -37,15 +38,14 @@ async def create_test_user(db: Session = Depends(database.get_db)):
     from ..utils.auth import get_password_hash
     
     # Check if test user already exists
-    existing_user = db.query(database.models.User).filter(
-        database.models.User.username == "testuser"
+    existing_user = db.query(models.User).filter(models.User.username == "testuser"
     ).first()
     if existing_user:
         return {"message": "Test user already exists"}
     
     # Create test user
     hashed_password = get_password_hash("testpassword")
-    user = database.models.User(
+    user = models.User(
         username="testuser",
         hashed_password=hashed_password
     )

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+# from typing import Optional
 
 class DataBase(BaseModel):
     name: str
@@ -13,4 +13,4 @@ class Data(DataBase):
     area: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
