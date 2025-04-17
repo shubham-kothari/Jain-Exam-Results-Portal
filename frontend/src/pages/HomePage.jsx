@@ -23,7 +23,7 @@ const HomePage = () => {
     if (area) {
       setAreaSelected(true);
       axios
-        .get(`${process.env.REACT_APP_API_URL}/data/?area=${area}`)
+        .get(`${process.env.REACT_APP_API_URL}/data?area=${area}`)
         .then((response) => setData(response.data))
         .catch((error) => {
           console.error(error);

@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 from .database import Base
 
@@ -14,15 +14,15 @@ class User(Base):
 
 class City(Base):
     __tablename__ = "cities"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True)
-
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    name = Column(String, unique=True, nullable=False)
     results = relationship("Result", back_populates="area")
 
 class Result(Base):
     __tablename__ = "results"
-
+    __table_args__ = (
+        UniqueConstraint("name", "area_id", name="uq_result_name_area"),
+    )
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     marks = Column(Integer)

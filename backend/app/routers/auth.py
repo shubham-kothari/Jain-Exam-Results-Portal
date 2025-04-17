@@ -38,15 +38,15 @@ async def create_test_user(db: Session = Depends(database.get_db)):
     from ..utils.auth import get_password_hash
     
     # Check if test user already exists
-    existing_user = db.query(models.User).filter(models.User.username == "testuser"
+    existing_user = db.query(models.User).filter(models.User.username == "test"
     ).first()
     if existing_user:
         return {"message": "Test user already exists"}
     
     # Create test user
-    hashed_password = get_password_hash("testpassword")
+    hashed_password = get_password_hash("test")
     user = models.User(
-        username="testuser",
+        username="test",
         hashed_password=hashed_password
     )
     db.add(user)
@@ -54,6 +54,6 @@ async def create_test_user(db: Session = Depends(database.get_db)):
     
     return {
         "message": "Test user created successfully",
-        "username": "testuser",
-        "password": "testpassword"
+        "username": "test",
+        "password": "test"
     }

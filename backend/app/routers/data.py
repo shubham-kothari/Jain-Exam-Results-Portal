@@ -7,9 +7,9 @@ from ..utils.auth import get_current_active_user
 import csv
 from typing import List
 
-router = APIRouter(prefix="/data", tags=["data"])
+router = APIRouter(tags=["data"])
 
-@router.post("/", response_model=data.Data)
+@router.post("/data", response_model=data.Data)
 async def create_data(
     item: data.DataCreate,
     db: Session = Depends(database.get_db),
@@ -42,7 +42,7 @@ async def create_data(
         "area": db_city.name
     }
 
-@router.get("/", response_model=List[data.Data])
+@router.get("/data", response_model=List[data.Data])
 async def get_all_data(
     area: str = None,
     db: Session = Depends(database.get_db)
@@ -71,7 +71,7 @@ async def get_all_data(
     
     return formatted_results
 
-@router.post("/upload-csv/")
+@router.post("/data/upload-csv")
 async def upload_csv(
     file: UploadFile = File(...),
     db: Session = Depends(database.get_db),
