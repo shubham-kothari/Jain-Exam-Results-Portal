@@ -2,24 +2,24 @@ services:
   frontend_v2:
     build:
       context: ./frontend_v2
-      dockerfile: Dockerfile
-    ports:
-      - "20020:80"
-    depends_on:
-      - backend
-    environment:
-      - REACT_APP_API_URL=https://api.kotharicomputers.com
-
-  frontend:
-    build:
-      context: ./frontend
       dockerfile: Dockerfile.frontend
     ports:
-      - "20021:3000"
-    environment:
-      - REACT_APP_API_URL=https://api.kotharicomputers.com
+      - "20020:3000"
     depends_on:
       - backend
+    environment:
+      - REACT_APP_API_BASE_URL=https://api.kotharicomputers.com
+
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.frontend
+  #   ports:
+  #     - "20021:3000"
+  #   environment:
+  #     - REACT_APP_API_URL=https://api.kotharicomputers.com
+  #   depends_on:
+  #     - backend
 
   backend:
     build:
