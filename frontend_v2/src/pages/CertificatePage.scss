@@ -1,0 +1,75 @@
+.certificate-page {
+  .header-icon {
+    text-align: center;
+    margin: 20px 0;
+    color: #4CAF50;
+  }
+
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+
+  h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+  }
+
+  .candidate-info {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 4px;
+
+    p {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+
+      &:hover {
+        background: #45a049;
+      }
+
+      &:disabled {
+        background: #cccccc;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .pdf-viewer {
+    margin-top: 30px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+}
