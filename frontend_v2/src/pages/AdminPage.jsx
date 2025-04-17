@@ -81,19 +81,19 @@ const AdminPage = () => {
             className={activeTab === 'data' ? 'active' : ''}
             onClick={() => setActiveTab('data')}
           >
-            POST /data
+            Add/Update Results
           </li>
           <li 
             className={activeTab === 'upload' ? 'active' : ''}
             onClick={() => setActiveTab('upload')}
           >
-            /data/upload-csv
+            Upload Result from CSV
           </li>
           <li 
             className={activeTab === 'cities' ? 'active' : ''}
             onClick={() => setActiveTab('cities')}
           >
-            /cities
+            Add City
           </li>
         </ul>
       </div>
@@ -115,6 +115,9 @@ const DataForm = ({ token }) => {
   const [message, setMessage] = useState('');
   const [citySuggestions, setCitySuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [results, setResults] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editMarks, setEditMarks] = useState('');
 
   const fetchCities = async () => {
     try {
@@ -132,10 +135,41 @@ const DataForm = ({ token }) => {
     }
   };
 
+  const fetchResults = async (area) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/data?area=${area}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // Map response data to ensure consistent structure
+        const formattedResults = data.map(item => ({
+          id: item.id,
+          name: item.name,
+          marks: item.marks,
+          area: item.area,
+          area_id: item.id // Using id as area_id as per endpoint response
+        }));
+        setResults(formattedResults);
+      }
+    } catch (err) {
+      console.error('Failed to fetch results:', err);
+    }
+  };
+
   React.useEffect(() => {
     fetchCities();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  React.useEffect(() => {
+    if (formData.area) {
+      fetchResults(formData.area);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.area]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -155,9 +189,51 @@ const DataForm = ({ token }) => {
 
       setMessage('Data submitted successfully');
       setFormData({ name: '', marks: '', area: '' });
+      if (formData.area) {
+        fetchResults(formData.area);
+      }
     } catch (err) {
       setMessage('Error: ' + err.message);
     }
+  };
+
+  const handleEdit = (result) => {
+    setEditingId(result.id);
+    setEditMarks(result.marks);
+  };
+
+  const handleSaveEdit = async (result) => {
+    try {
+      // Get area_id from the first result (all should have same area_id)
+      const area_id = results[0]?.id;
+      if (!area_id) {
+        throw new Error('Could not determine area_id');
+      }
+      const name = encodeURIComponent(result.name);
+      const url = `${process.env.REACT_APP_API_BASE_URL}/data/modify?area_id=${area_id}&name=${name}&marks=${editMarks}`;
+      
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'accept': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update data');
+      }
+
+      setEditingId(null);
+      fetchResults(formData.area);
+      setMessage('Data updated successfully');
+    } catch (err) {
+      setMessage('Error: ' + err.message);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
   };
 
   return (
@@ -219,6 +295,49 @@ const DataForm = ({ token }) => {
         <button type="submit">Submit</button>
       </form>
       {message && <div>{message}</div>}
+      
+      {formData.area && results.length > 0 && (
+        <div className="results-table">
+          <h3>Results for {formData.area}</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Marks</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map(result => (
+                <tr key={result.id}>
+                  <td>{result.name}</td>
+                  <td>
+                    {editingId === result.id ? (
+                      <input
+                        type="number"
+                        value={editMarks}
+                        onChange={(e) => setEditMarks(e.target.value)}
+                      />
+                    ) : (
+                      result.marks
+                    )}
+                  </td>
+                  <td>
+                    {editingId === result.id ? (
+                      <>
+                        <button onClick={() => handleSaveEdit(result)}>Save</button>
+                        <button onClick={handleCancelEdit}>Cancel</button>
+                      </>
+                    ) : (
+                      <button onClick={() => handleEdit(result)}>Edit</button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

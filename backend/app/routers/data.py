@@ -5,7 +5,7 @@ from ..db import models
 from ..schemas import data, cities
 from ..utils.auth import get_current_active_user
 import csv
-from typing import List
+from typing import List, Optional
 
 router = APIRouter(tags=["data"])
 
@@ -105,3 +105,45 @@ async def upload_csv(
     
     db.commit()
     return {"message": "CSV data imported successfully"}
+
+@router.put("/data/modify", response_model=List[data.Data])
+async def modify_data(
+    area_id: int,
+    name: str,
+    marks: Optional[int] = None,
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(get_current_active_user)
+):
+    # Get the city first to verify it exists
+    db_city = db.query(models.City).filter(
+        models.City.id == area_id
+    ).first()
+    if not db_city:
+        raise HTTPException(status_code=404, detail="Area not found")
+
+    # Find and update matching results (case-insensitive name match)
+    query = db.query(models.Result).filter(
+        models.Result.area_id == area_id,
+        models.Result.name.ilike(name)
+    )
+    
+    if marks is not None:
+        query.update({"marks": marks})
+        db.commit()
+
+    # Get updated results
+    updated_results = query.all()
+    if not updated_results:
+        raise HTTPException(status_code=404, detail="No matching records found")
+
+    # Format response
+    formatted_results = []
+    for result in updated_results:
+        formatted_results.append({
+            "id": result.id,
+            "name": result.name,
+            "marks": result.marks,
+            "area": db_city.name
+        })
+    
+    return formatted_results
