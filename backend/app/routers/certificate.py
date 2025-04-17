@@ -1,6 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from PIL import Image, ImageDraw, ImageFont
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.utils import ImageReader
 import io
 import os
 
@@ -15,26 +18,32 @@ CERTIFICATE_TEMPLATE_PATH = os.path.join(
     "../data/Certificate.png"
 )
 
-def get_fonts():
-    """Load fonts matching frontend styles"""
+def get_font_for_text(text, size):
+    """Get appropriate font based on text content"""
+    # Check if text contains Devanagari Unicode characters
+    is_hindi = any('\u0900' <= char <= '\u097F' for char in text)
+    
     try:
-        # Try to load semi-bold variant first
-        name_font = ImageFont.truetype("OldStandardTT-Bold.ttf", 45)
-        marks_font = ImageFont.truetype("OldStandardTT-Bold.ttf", 35)  # Increased from 18 to 24
+        if is_hindi:
+            return ImageFont.truetype("NotoSansDevanagari-Bold.ttf", size)
+        else:
+            return ImageFont.truetype("OldStandardTT-Bold.ttf", size)
     except:
         try:
-            # Fallback to regular if semi-bold not available
-            name_font = ImageFont.truetype("OldStandardTT-Regular.ttf", 45)
-            marks_font = ImageFont.truetype("OldStandardTT-Regular.ttf", 35)  # Increased from 18 to 24
+            if is_hindi:
+                return ImageFont.truetype("NotoSansDevanagari-Regular.ttf", size)
+            else:
+                return ImageFont.truetype("OldStandardTT-Regular.ttf", size)
         except:
             try:
-                # Final fallback to Arial Bold
-                name_font = ImageFont.truetype("arialbd.ttf", 45)
-                marks_font = ImageFont.truetype("arialbd.ttf", 35)  # Increased from 18 to 24
+                return ImageFont.truetype("arialbd.ttf", size)
             except:
-                # Absolute fallback to default
-                name_font = ImageFont.load_default()
-                marks_font = ImageFont.load_default()
+                return ImageFont.load_default()
+
+def get_fonts():
+    """Load fonts matching frontend styles"""
+    name_font = get_font_for_text("Sample")  # Default to English font
+    marks_font = get_font_for_text("Sample")  # Default to English font
     return name_font, marks_font
 
 def calculate_positions(img_width, img_height):
@@ -55,8 +64,9 @@ def calculate_positions(img_width, img_height):
 @router.post("/generate")
 async def generate_certificate(name: str, marks: str):
     try:
-        # Load fonts
-        name_font, marks_font = get_fonts()
+        # Load appropriate fonts based on text content
+        name_font = get_font_for_text(name, 45)  # Use 45px size for name
+        marks_font = get_font_for_text(marks, 35)  # Use 35px size for marks
         
         # Open certificate template
         with Image.open(CERTIFICATE_TEMPLATE_PATH) as img:
@@ -82,12 +92,29 @@ async def generate_certificate(name: str, marks: str):
                 anchor="mm"  # Center text at position
             )
             
-            # Save to bytes buffer
+            # Get original image dimensions
+            img_width, img_height = img.size
+            
+            # Create PDF with same dimensions as original image
+            pdf_buffer = io.BytesIO()
+            c = canvas.Canvas(pdf_buffer, pagesize=(img_width, img_height))
+            
+            # Convert PIL Image to ReportLab ImageReader
             img_byte_arr = io.BytesIO()
             img.save(img_byte_arr, format='PNG')
             img_byte_arr.seek(0)
+            pil_img = ImageReader(img_byte_arr)
             
-            return StreamingResponse(img_byte_arr, media_type="image/png")
+            # Draw image at original size
+            c.drawImage(pil_img, 0, 0, width=img_width, height=img_height)
+            c.save()
+            pdf_buffer.seek(0)
+            
+            return StreamingResponse(
+                pdf_buffer,
+                media_type="application/pdf",
+                headers={"Content-Disposition": "attachment; filename=certificate.pdf"}
+            )
             
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
