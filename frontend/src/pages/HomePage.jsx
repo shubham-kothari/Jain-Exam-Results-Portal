@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Certificate from "./Certificate";
 import { jsPDF } from "jspdf";
@@ -13,56 +13,51 @@ const HomePage = () => {
   const [name, setName] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
+  const certificateRef = useRef(null);
 
+  const scrollToCertificate = () => {
+    certificateRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   useEffect(() => {
     if (area) {
       setAreaSelected(true);
-      setIsLoading(true);
       axios
         .get(`${process.env.REACT_APP_API_URL}/data/?area=${area}`)
-        .then((response) => {
-          console.log('Full API Response:', response);
-          console.log('Response Data:', response.data);
-          
-          // Handle both array and object response formats
-          const responseData = Array.isArray(response.data) ? 
-              response.data : 
-              (response.data?.data || response.data || []);
-          
-          setData(responseData);
-          
-          if (!responseData.length) {
-            console.warn('Empty data received from API');
-          }
-        })
+        .then((response) => setData(response.data))
         .catch((error) => {
-          console.error('API Error:', error);
+          console.error(error);
           setData([]);
-        })
-        .finally(() => {
-          setIsLoading(false);
         });
     }
   }, [area]);
 
-  // Function to generate PDF and download it
   const downloadCertificate = () => {
     const certificateContent = document.querySelector(".certificate-wrapper");
 
-    // Wait for all images and content to load
     html2canvas(certificateContent, { scale: 2 }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
-      const doc = new jsPDF();
 
-      // Add the image to the PDF
-      doc.addImage(imgData, "PNG", 10, 10, 180, 250); // Adjust the size to fit the page
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4",
+      });
 
-      // Save the document as a PDF
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      const y = (pageHeight - imgHeight) / 2;
+
+      doc.addImage(imgData, "PNG", 0, y, imgWidth, imgHeight);
+
       doc.save("certificate.pdf");
     });
   };
+
 
   return (
     <div className="container-result">
@@ -86,10 +81,15 @@ const HomePage = () => {
           setName(selectedName);
 
           const user = data.find((item) => item.name === selectedName);
-          setSelectedUser(user || null);
 
           if (user) {
+            setSelectedUser(user);
             setShowConfetti(true);
+
+            // Scroll using ref
+            setTimeout(() => {
+              certificateRef.current?.scrollIntoView({ behavior: "smooth" });
+            }, 100); // Short delay to ensure render
           }
         }}
       >
@@ -101,79 +101,28 @@ const HomePage = () => {
         ))}
       </select>
 
-      {isLoading ? (
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>Loading data...</p>
-        </div>
-      ) : areaSelected && (
-        <div>
-          {!selectedUser ? (
-            <div className="name-selection">
-              <h3>अपना नाम चुनें</h3>
-              <select
-                className="dropdown"
-                onChange={(e) => {
-                  const selectedName = e.target.value;
-                  setName(selectedName);
-                  const user = data.find((item) => item.name === selectedName);
-                  setSelectedUser(user || null);
-                  if (user) setShowConfetti(true);
-                }}
-              >
-                <option value="">अपना नाम चुने</option>
-                {data.map((item, index) => (
-                  <option key={index} value={item.name}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : (
-            <div>
-              <div className="user-data">
-                <h3>Result:</h3>
-                <div style={{ width: "100%" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                    <thead>
-                      <tr>
-                        <th style={{ backgroundColor: "lightblue" }}>S.no.</th>
-                        <th style={{ backgroundColor: "lightblue" }}>Name</th>
-                        <th style={{ backgroundColor: "lightblue" }}>Area</th>
-                        <th style={{ backgroundColor: "lightblue" }}>Marks</th>
-                      </tr>
-                    </thead>
-                    <tbody style={{ backgroundColor: "white" }}>
-                      <tr>
-                        <td>1.</td>
-                        <td>{selectedUser.name}</td>
-                        <td>{selectedUser.area}</td>
-                        <td>{selectedUser.marks}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
 
-              <div id="certificate-wrapper">
-                <Certificate name={selectedUser.name} marks={selectedUser.marks} />
-              </div>
 
-              <button onClick={downloadCertificate} className="download-btn">
-                Download Certificate
-              </button>
-            </div>
-          )}
-        </div>
+      {selectedUser && (
+        <>
+          <div id="certificate-wrapper" ref={certificateRef}>
+            <Certificate name={selectedUser.name} marks={selectedUser.marks} />
+          </div>
+
+          <button onClick={downloadCertificate} className="download-btn">
+            Download Certificate
+          </button>
+        </>
       )}
+
       <Confetti show={showConfetti} setShow={setShowConfetti} />
     </div>
   );
 };
 
 const areas = [
-  "अतरिया", "बागबहरा", "बालोद", "भानुपरतापपुर", "चरोदा", "छुईखदान",
-  "दल्ली राजहरा", "धमतरी", "डोंगरगढ़", "डोंगरगाओं", "दुर्ग", "गीदम",
+  "अतरिया", "बागबहरा", "बालोद", "भानुप्रतापपुर", "चरोदा", "छुईखदान",
+  "दल्ली राजहरा", "धमतरी", "डोंगरगढ़", "डोंगरगाँव", "दुर्ग", "गीदम",
   "जगदलपुर", "जयपुर झाड़ी", "कवर्धा", "केशकाल", "खैरागढ़", "खरीयार रोड", "कोंडागाँव ", "कोरबा",
   "लंजोड़ा", "महासमुंद", "मुड़ीपार", "नगरी", "नारायणपुर", "रायपुर", "राजनांदगाँव",
   "सम्बलपुर", "वैशालीनगर"
