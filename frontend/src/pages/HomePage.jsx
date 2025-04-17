@@ -13,17 +13,36 @@ const HomePage = () => {
   const [name, setName] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
 
   useEffect(() => {
     if (area) {
       setAreaSelected(true);
+      setIsLoading(true);
       axios
-        .get(`${process.env.REACT_APP_API_URL}/data?area=${area}`)
-        .then((response) => setData(response.data.data))
+        .get(`${process.env.REACT_APP_API_URL}/data/?area=${area}`)
+        .then((response) => {
+          console.log('Full API Response:', response);
+          console.log('Response Data:', response.data);
+          
+          // Handle both array and object response formats
+          const responseData = Array.isArray(response.data) ? 
+              response.data : 
+              (response.data?.data || response.data || []);
+          
+          setData(responseData);
+          
+          if (!responseData.length) {
+            console.warn('Empty data received from API');
+          }
+        })
         .catch((error) => {
-          console.error(error);
+          console.error('API Error:', error);
           setData([]);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     }
   }, [area]);
@@ -82,7 +101,12 @@ const HomePage = () => {
         ))}
       </select>
 
-      {areaSelected && (
+      {isLoading ? (
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Loading data...</p>
+        </div>
+      ) : areaSelected && (
         <div>
           {!selectedUser ? (
             <div className="name-selection">

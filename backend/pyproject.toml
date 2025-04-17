@@ -2,7 +2,6 @@
 name = "backend"
 version = "0.1.0"
 description = "Add your description here"
-readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi==0.109.1",
@@ -14,3 +13,10 @@ dependencies = [
     "sqlalchemy==2.0.25",
     "uvicorn==0.27.0",
 ]
+
+#[build-system]
+#requires = ["setuptools>=42"]
+#build-backend = "setuptools.build_meta"
+#
+#[tool.setuptools]
+#packages = ["app", "app.db", "app.routers", "app.schemas", "app.utils"]

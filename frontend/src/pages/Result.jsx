@@ -13,6 +13,7 @@ const Result = () => {
     const resultRef = useRef(); // For PDF generation
 
     const [showPDFHeader, setShowPDFHeader] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
 
 
@@ -23,23 +24,32 @@ const Result = () => {
         if (area) {
             setAreaSelected(true);
             setName("");
+            setIsLoading(true);
             axios
-                .get(`${process.env.REACT_APP_API_URL}/data?area=${area}`)
+                .get(`${process.env.REACT_APP_API_URL}/data/?area=${area}`)
                 .then((response) => {
-                    console.log('API Response:', response.data);
-                    if (response.data && response.data.data) {
-                        setData(response.data.data);
-                        setFilteredData(response.data.data);
-                    } else {
-                        console.error('Unexpected API response format');
-                        setData([]);
-                        setFilteredData([]);
+                    console.log('Full API Response:', response);
+                    console.log('Response Data:', response.data);
+                    
+                    // Handle both array and object response formats
+                    const responseData = Array.isArray(response.data) ? 
+                        response.data : 
+                        (response.data?.data || response.data || []);
+                    
+                    setData(responseData);
+                    setFilteredData(responseData);
+                    
+                    if (!responseData.length) {
+                        console.warn('Empty data received from API');
                     }
                 })
                 .catch((error) => {
                     console.error('API Error:', error);
                     setData([]);
                     setFilteredData([]);
+                })
+                .finally(() => {
+                    setIsLoading(false);
                 });
         }
     }, [area]);
@@ -117,7 +127,12 @@ const Result = () => {
                         </div>
                     )}
 
-                    {filteredData.length > 0 ? (
+                    {isLoading ? (
+                    <div className="loading-spinner">
+                        <div className="spinner"></div>
+                        <p>Loading data...</p>
+                    </div>
+                ) : filteredData.length > 0 ? (
                         <table className="result-table">
                             <thead>
                                 <tr>
