@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from ..db import database
 from ..db import models
+from operator import itemgetter
 from ..schemas import data, cities
 from pydantic import BaseModel
 from ..utils.auth import get_current_active_user
@@ -69,7 +70,7 @@ async def get_all_data(
             "marks": result.marks,
             "area": city.name
         })
-    
+    formatted_results = sorted(formatted_results, key=itemgetter('name'))
     return formatted_results
 
 
@@ -201,3 +202,8 @@ async def modify_data(
         })
     
     return formatted_results
+
+
+@router.post("/data/upload-xls")
+async def upload_xl():
+    pass

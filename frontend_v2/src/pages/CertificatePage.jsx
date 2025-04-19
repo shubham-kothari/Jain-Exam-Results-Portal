@@ -44,7 +44,7 @@ const CertificatePage = () => {
 
   const handleGenerateCertificate = async () => {
     if (!selectedCandidate) return;
-    
+
     setLoading(true);
     try {
       const response = await fetch(
@@ -113,40 +113,55 @@ const CertificatePage = () => {
 
       {selectedCandidate && (
         <div className="candidate-info">
-          <p>नाम: {selectedCandidate.name}</p>
-          <p>अंक: {selectedCandidate.marks}</p>
+          <table className='candidate-table'>
+            <thead>
+              <th className='candidate-name'>नाम</th>
+              <th>अंक</th>
+              <th>क्षेत्र</th>
+            </thead>
+            <tbody>
+              <td className='candidate-name'>{selectedCandidate.name}</td>
+              <td>{selectedCandidate.marks}</td>
+              <td>{selectedCandidate.area}</td>
+            </tbody>
+          </table>
           {!pdfUrl ? (
-            <button 
-              onClick={handleGenerateCertificate}
-              disabled={loading}
-            >
-              {loading ? 'प्रमाणपत्र जनरेट हो रहा है ...' : 'प्रमाणपत्र जनरेट करें'}
-            </button>
+            <div className='certificate-button'>
+              <button
+                onClick={handleGenerateCertificate}
+                disabled={loading}
+              >
+                {loading ? 'प्रमाणपत्र जनरेट हो रहा है ...' : 'प्रमाणपत्र जनरेट करें'}
+              </button>
+            </div>
           ) : (
-            <button 
-              onClick={() => {
-                const link = document.createElement('a');
-                link.href = pdfUrl;
-                link.download = `${selectedCandidate.name}_Certificate.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-              }}
-              className="download-btn"
-              style={{backgroundColor: '#4285f4', color: 'white'}}
-            >
-              प्रमाणपत्र डाउनलोड करें
-            </button>
+            <div className='certificate-button'>
+
+              <button
+                onClick={() => {
+                  const link = document.createElement('a');
+                  link.href = pdfUrl;
+                  link.download = `${selectedCandidate.name}_Certificate.pdf`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
+                className="download-btn"
+                style={{ backgroundColor: '#4285f4', color: 'white' }}
+              >
+                प्रमाणपत्र डाउनलोड करें
+              </button>
+            </div>
           )}
         </div>
       )}
 
       {pdfUrl && (
         <div className="pdf-viewer">
-          <iframe 
-            src={pdfUrl} 
+          <iframe
+            src={pdfUrl}
             title="Certificate"
-            width="100%" 
+            width="100%"
             height="500px"
           />
         </div>

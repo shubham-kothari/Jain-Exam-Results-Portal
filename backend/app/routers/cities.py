@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from operator import itemgetter
 from sqlalchemy import select
 from ..db import database
 from ..db import models
@@ -40,4 +41,13 @@ async def add_cities(
 @router.get("/cities", response_model=list[cities.City])
 async def get_cities(db: Session = Depends(database.get_db)):
     cities = db.query(models.City).all()
-    return cities
+    cities_list_of_dict = list()
+    for city in cities:
+        cities_list_of_dict.append(
+            {
+                "id": city.id,
+                "name": city.name,
+            }
+        )
+    cities_list_of_dict = sorted(cities_list_of_dict, key=itemgetter('name'))
+    return cities_list_of_dict
