@@ -117,7 +117,12 @@ const DataForm = ({ token }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [results, setResults] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const [editMarks, setEditMarks] = useState('');
+  const [editData, setEditData] = useState({
+    id: null,
+    name: '',
+    marks: '',
+    area_id: null
+  });
 
   const fetchCities = async () => {
     try {
@@ -199,25 +204,30 @@ const DataForm = ({ token }) => {
 
   const handleEdit = (result) => {
     setEditingId(result.id);
-    setEditMarks(result.marks);
+    setEditData({
+      id: result.id,
+      name: result.name,
+      marks: result.marks,
+      area_id: result.area_id
+    });
   };
 
-  const handleSaveEdit = async (result) => {
+  const handleSaveEdit = async () => {
     try {
-      // Get area_id from the first result (all should have same area_id)
-      const area_id = results[0]?.id;
-      if (!area_id) {
-        throw new Error('Could not determine area_id');
-      }
-      const name = encodeURIComponent(result.name);
-      const url = `${process.env.REACT_APP_API_BASE_URL}/data/modify?area_id=${area_id}&name=${name}&marks=${editMarks}`;
+      const url = `${process.env.REACT_APP_API_BASE_URL}/data/modify`;
       
       const response = await fetch(url, {
         method: 'PUT',
         headers: {
-          'accept': 'application/json',
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify({
+          result_id: editData.id,
+          name: editData.name,
+          marks: parseInt(editData.marks),
+          area_id: editData.area_id
+        })
       });
 
       if (!response.ok) {
@@ -234,6 +244,12 @@ const DataForm = ({ token }) => {
 
   const handleCancelEdit = () => {
     setEditingId(null);
+    setEditData({
+      id: null,
+      name: '',
+      marks: '',
+      area_id: null
+    });
   };
 
   const handleDelete = async (resultId) => {
@@ -331,13 +347,23 @@ const DataForm = ({ token }) => {
             <tbody>
               {results.map(result => (
                 <tr key={result.id}>
-                  <td>{result.name}</td>
+                  <td>
+                    {editingId === result.id ? (
+                      <input
+                        type="text"
+                        value={editData.name}
+                        onChange={(e) => setEditData({...editData, name: e.target.value})}
+                      />
+                    ) : (
+                      result.name
+                    )}
+                  </td>
                   <td>
                     {editingId === result.id ? (
                       <input
                         type="number"
-                        value={editMarks}
-                        onChange={(e) => setEditMarks(e.target.value)}
+                        value={editData.marks}
+                        onChange={(e) => setEditData({...editData, marks: e.target.value})}
                       />
                     ) : (
                       result.marks
@@ -345,8 +371,24 @@ const DataForm = ({ token }) => {
                   </td>
                   <td>
                     {editingId === result.id ? (
+                      <select
+                        value={editData.area_id}
+                        onChange={(e) => setEditData({...editData, area_id: parseInt(e.target.value)})}
+                      >
+                        {citySuggestions.map((city, index) => (
+                          <option key={index} value={index + 1}>
+                            {city}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      result.area
+                    )}
+                  </td>
+                  <td>
+                    {editingId === result.id ? (
                       <>
-                        <button onClick={() => handleSaveEdit(result)}>Save</button>
+                        <button onClick={handleSaveEdit}>Save</button>
                         <button onClick={handleCancelEdit}>Cancel</button>
                       </>
                     ) : (
