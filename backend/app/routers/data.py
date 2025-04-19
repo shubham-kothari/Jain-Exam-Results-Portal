@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from io import BytesIO
+import openpyxl
 from sqlalchemy.orm import Session
 from ..db import database
 from ..db import models
@@ -205,5 +207,76 @@ async def modify_data(
 
 
 @router.post("/data/upload-xls")
-async def upload_xl():
-    pass
+async def upload_xls(
+    file: UploadFile = File(...),
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(get_current_active_user)
+):
+    try:
+        # Read Excel file
+        contents = await file.read()
+        workbook = openpyxl.load_workbook(filename=BytesIO(contents))
+        
+        processed_rows = 0
+        skipped_rows = 0
+        
+        for sheet_name in workbook.sheetnames:
+            sheet = workbook[sheet_name]
+            
+            for row in sheet.iter_rows(min_row=2, values_only=True):  # Skip header
+                if not row or len(row) < 4 or not all(row[:3]):  # Skip empty/incomplete rows
+                    print(f"[{sheet_name}] Skipping empty or incomplete row {row}")
+                    skipped_rows += 1
+                    continue
+                    
+                _, name, area, marks = row[:4]
+                
+                try:
+                    # Get or create city
+                    db_city = db.query(models.City).filter(
+                        models.City.name == area
+                    ).first()
+                    if not db_city:
+                        db_city = models.City(name=area)
+                        db.add(db_city)
+                        db.commit()
+                        db.refresh(db_city)
+                    
+                    # Check if result exists
+                    db_result = db.query(models.Result).filter(
+                        models.Result.name == name,
+                        models.Result.area_id == db_city.id
+                    ).first()
+                    
+                    if db_result:
+                        # Update existing result
+                        db_result.marks = marks
+                    else:
+                        # Create new result
+                        db_result = models.Result(
+                            name=name,
+                            marks=marks,
+                            area_id=db_city.id
+                        )
+                        db.add(db_result)
+                    
+                    processed_rows += 1
+                    
+                except Exception as e:
+                    print(f"Error processing row: {e}")
+                    skipped_rows += 1
+                    continue
+        
+        db.commit()
+        
+        return {
+            "message": "Excel data processed successfully",
+            "processed_rows": processed_rows,
+            "skipped_rows": skipped_rows
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error processing Excel file: {str(e)}"
+        )
