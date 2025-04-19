@@ -81,7 +81,7 @@ const AdminPage = () => {
             className={activeTab === 'data' ? 'active' : ''}
             onClick={() => setActiveTab('data')}
           >
-            Add/Update Results
+            Add/Modify Results
           </li>
           <li 
             className={activeTab === 'upload' ? 'active' : ''}
@@ -274,7 +274,7 @@ const DataForm = ({ token }) => {
 
   return (
     <div>
-      <h2>POST /data</h2>
+      <h2>Add/Modify Results</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Name:</label>
@@ -335,6 +335,7 @@ const DataForm = ({ token }) => {
               <tr>
                 <th>Name</th>
                 <th>Marks</th>
+                <th>Area</th>
                 <th>Actions</th>
                 <th>Delete</th>
               </tr>
