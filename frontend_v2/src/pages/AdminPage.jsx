@@ -114,7 +114,6 @@ const DataForm = ({ token }) => {
   });
   const [message, setMessage] = useState('');
   const [citySuggestions, setCitySuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [results, setResults] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editData, setEditData] = useState({
@@ -294,34 +293,20 @@ const DataForm = ({ token }) => {
             required
           />
         </div>
-        <div className="suggestion-container">
+        <div>
           <label>Area:</label>
-          <input 
-            type="text" 
+          <select
             value={formData.area}
-            onChange={(e) => {
-              setFormData({...formData, area: e.target.value});
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+            onChange={(e) => setFormData({...formData, area: e.target.value})}
             required
-          />
-              {showSuggestions && citySuggestions.length > 0 && (
-                <ul className="suggestions">
-                  {citySuggestions.map((city, index) => (
-                    <li 
-                      key={index}
-                      onClick={() => {
-                        setFormData({...formData, area: city});
-                        setShowSuggestions(false);
-                      }}
-                    >
-                      {city}
-                    </li>
-                  ))}
-                </ul>
-              )}
+          >
+            <option value="">Select an area</option>
+            {citySuggestions.map((city, index) => (
+              <option key={index} value={city}>
+                {city}
+              </option>
+            ))}
+          </select>
         </div>
         <button type="submit">Submit</button>
       </form>
