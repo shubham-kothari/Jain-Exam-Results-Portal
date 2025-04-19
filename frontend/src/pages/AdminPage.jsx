@@ -138,8 +138,8 @@ const DataForm = ({ token }) => {
         }
       });
       if (response.ok) {
-        const data = await response.json();
-        setCitySuggestions(data.map(city => city.name));
+      const data = await response.json();
+      setCitySuggestions(data); // Store full city objects
       }
     } catch (err) {
       console.error('Failed to fetch cities:', err);
@@ -308,9 +308,9 @@ const DataForm = ({ token }) => {
             required
           >
             <option value="">Select an area</option>
-            {citySuggestions.map((city, index) => (
-              <option key={index} value={city}>
-                {city}
+            {citySuggestions.map(city => (
+              <option key={city.id} value={city.name}>
+                {city.name}
               </option>
             ))}
           </select>
@@ -361,16 +361,23 @@ const DataForm = ({ token }) => {
                   </td>
                   <td>
                     {editingId === result.id ? (
-                      <select
-                        value={editData.area_id}
-                        onChange={(e) => setEditData({...editData, area_id: parseInt(e.target.value)})}
-                      >
-                        {citySuggestions.map((city, index) => (
-                          <option key={index} value={index + 1}>
-                            {city}
-                          </option>
-                        ))}
-                      </select>
+                      <>
+                        <div>{result.area}</div>
+                        <select
+                          value={citySuggestions.find(c => c.id === editData.area_id)?.name || ''}
+                          onChange={(e) => {
+                            const selectedCity = citySuggestions.find(c => c.name === e.target.value);
+                            setEditData({...editData, area_id: selectedCity?.id || null})
+                          }}
+                        >
+                          <option value="">Change area...</option>
+                          {citySuggestions.map(city => (
+                            <option key={city.id} value={city.name}>
+                              {city.name}
+                            </option>
+                          ))}
+                        </select>
+                      </>
                     ) : (
                       result.area
                     )}
