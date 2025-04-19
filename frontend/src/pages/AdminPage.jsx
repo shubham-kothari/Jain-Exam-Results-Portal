@@ -90,6 +90,12 @@ const AdminPage = () => {
             Upload Result from CSV
           </li>
           <li 
+            className={activeTab === 'upload-xls' ? 'active' : ''}
+            onClick={() => setActiveTab('upload-xls')}
+          >
+            Upload Result from Excel
+          </li>
+          <li 
             className={activeTab === 'cities' ? 'active' : ''}
             onClick={() => setActiveTab('cities')}
           >
@@ -100,6 +106,7 @@ const AdminPage = () => {
       <div className="content">
         {activeTab === 'data' && <DataForm token={token} />}
         {activeTab === 'upload' && <UploadForm token={token} />}
+        {activeTab === 'upload-xls' && <ExcelUploadForm token={token} />}
         {activeTab === 'cities' && <CitiesManager token={token} />}
       </div>
     </div>
@@ -318,6 +325,7 @@ const DataForm = ({ token }) => {
           <table>
             <thead>
               <tr>
+                <th>S.No</th>
                 <th>Name</th>
                 <th>Marks</th>
                 <th>Area</th>
@@ -326,8 +334,9 @@ const DataForm = ({ token }) => {
               </tr>
             </thead>
             <tbody>
-              {results.map(result => (
+              {results.map((result, index) => (
                 <tr key={result.id}>
+                  <td>{index + 1}</td>
                   <td>
                     {editingId === result.id ? (
                       <input
@@ -433,6 +442,57 @@ const UploadForm = ({ token }) => {
           <input 
             type="file" 
             accept=".csv"
+            onChange={(e) => setFile(e.target.files[0])}
+            required
+          />
+        </div>
+        <button type="submit">Upload</button>
+      </form>
+      {message && <div>{message}</div>}
+    </div>
+  );
+};
+
+const ExcelUploadForm = ({ token }) => {
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/data/upload-xls`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const data = await response.json();
+      setMessage(`Excel uploaded successfully. Processed ${data.processed_rows} rows, skipped ${data.skipped_rows}`);
+      setFile(null);
+    } catch (err) {
+      setMessage('Error: ' + err.message);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Upload Excel</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <input 
+            type="file" 
+            accept=".xlsx,.xls"
             onChange={(e) => setFile(e.target.files[0])}
             required
           />
