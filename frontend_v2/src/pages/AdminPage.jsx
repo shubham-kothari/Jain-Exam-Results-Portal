@@ -307,26 +307,21 @@ const DataForm = ({ token }) => {
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             required
           />
-          {showSuggestions && citySuggestions.length > 0 && (
-            <ul className="suggestions">
-              {citySuggestions
-                .filter(city => 
-                  city.toLowerCase().includes(formData.area.toLowerCase())
-                )
-                .map((city, index) => (
-                  <li 
-                    key={index}
-                    onClick={() => {
-                      setFormData({...formData, area: city});
-                      setShowSuggestions(false);
-                    }}
-                  >
-                    {city}
-                  </li>
-                ))
-              }
-            </ul>
-          )}
+              {showSuggestions && citySuggestions.length > 0 && (
+                <ul className="suggestions">
+                  {citySuggestions.map((city, index) => (
+                    <li 
+                      key={index}
+                      onClick={() => {
+                        setFormData({...formData, area: city});
+                        setShowSuggestions(false);
+                      }}
+                    >
+                      {city}
+                    </li>
+                  ))}
+                </ul>
+              )}
         </div>
         <button type="submit">Submit</button>
       </form>
