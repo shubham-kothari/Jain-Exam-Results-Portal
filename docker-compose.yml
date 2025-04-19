@@ -10,6 +10,8 @@ services:
     environment:
       - REACT_APP_API_BASE_URL=https://api.kotharicomputers.com
       # - REACT_APP_API_BASE_URL_LOCAL=http://localhost:8002
+    volumes:
+      - ./frontend:/app
       
   backend:
     build:

@@ -159,10 +159,11 @@ const CertificatePage = () => {
       {pdfUrl && (
         <div className="pdf-viewer">
           <iframe
-            src={pdfUrl}
+            src={`${pdfUrl}#view=FitH&zoom=scale`}
             title="Certificate"
             width="100%"
             height="500px"
+            style={{ border: 'none' }}
           />
         </div>
       )}
