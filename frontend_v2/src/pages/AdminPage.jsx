@@ -236,6 +236,26 @@ const DataForm = ({ token }) => {
     setEditingId(null);
   };
 
+  const handleDelete = async (resultId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/data/${resultId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete data');
+      }
+
+      setMessage('Data deleted successfully');
+      fetchResults(formData.area);
+    } catch (err) {
+      setMessage('Error: ' + err.message);
+    }
+  };
+
   return (
     <div>
       <h2>POST /data</h2>
@@ -305,6 +325,7 @@ const DataForm = ({ token }) => {
                 <th>Name</th>
                 <th>Marks</th>
                 <th>Actions</th>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -331,6 +352,14 @@ const DataForm = ({ token }) => {
                     ) : (
                       <button onClick={() => handleEdit(result)}>Edit</button>
                     )}
+                  </td>
+                  <td>
+                    <button 
+                      className="delete-btn"
+                      onClick={() => handleDelete(result.id)}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

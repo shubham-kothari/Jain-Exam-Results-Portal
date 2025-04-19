@@ -71,6 +71,25 @@ async def get_all_data(
     
     return formatted_results
 
+
+@router.delete("/data/{result_id}")
+async def delete_data(
+    result_id: int,
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(get_current_active_user)
+):
+    db_result = db.query(models.Result).filter(
+        models.Result.id == result_id
+    ).first()
+    
+    if not db_result:
+        raise HTTPException(status_code=404, detail="Result not found")
+    
+    db.delete(db_result)
+    db.commit()
+    
+    return {"message": "Result deleted successfully"}
+
 @router.post("/data/upload-csv")
 async def upload_csv(
     file: UploadFile = File(...),
