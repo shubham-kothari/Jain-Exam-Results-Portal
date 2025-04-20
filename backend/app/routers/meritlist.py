@@ -56,7 +56,7 @@ async def get_overall_merit_list(limit: int = 3, db: Session = Depends(get_db)):
 @router.get("/area", response_model=List[AreaMeritListResponse])
 async def get_area_merit_list(
     area_id: int, 
-    limit: int = 6,  # Default to 6 to show 3 overall merits + 3 area ranks
+    all: bool = False,  # Default to 6 to show 3 overall merits + 3 area ranks
     db: Session = Depends(get_db)
 ):
     """
@@ -128,7 +128,10 @@ async def get_area_merit_list(
 
     # Get top 3 unique area ranks (including all candidates with those ranks)
     unique_area_ranks = sorted({item['rank'] for item in ranked_area})
-    top_area_ranks = unique_area_ranks[:3]
+    if all:
+        top_area_ranks = unique_area_ranks
+    else:
+        top_area_ranks = unique_area_ranks[:3]
     filtered_area = [item for item in ranked_area if item['rank'] in top_area_ranks]
 
     # Combine both lists (overall merits first)
