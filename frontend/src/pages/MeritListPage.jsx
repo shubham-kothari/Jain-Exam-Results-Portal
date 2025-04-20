@@ -53,16 +53,19 @@ const MeritListPage = () => {
   };
 
   const fetchAreaMarksList = () => {
-    if (!selectedArea) return;
     setLoading(true);
-    axios.get(`${process.env.REACT_APP_API_BASE_URL}/meritlist/area-marks?area_id=${selectedArea}`)
+    const endpoint = selectedArea 
+      ? `${process.env.REACT_APP_API_BASE_URL}/meritlist/area?area_id=${selectedArea}&all=true`
+      : `${process.env.REACT_APP_API_BASE_URL}/meritlist/overall`;
+      
+    axios.get(endpoint)
       .then(response => {
         setResults(response.data);
         setLoading(false);
-        setListType('area_marks');
+        setListType(selectedArea ? 'area_merit' : 'छत्तीसगढ़');
       })
       .catch(error => {
-        console.error('Error fetching area marks list:', error);
+        console.error('Error fetching marks list:', error);
         setLoading(false);
       });
   };
@@ -101,13 +104,17 @@ const MeritListPage = () => {
         <div className="results">
           <h1>
             {listType === 'छत्तीसगढ़' && 'छत्तीसगढ़ मेरिट लिस्ट'}
-            {listType === 'area_merit' && `${areas.find(a => a.id.toString() === selectedArea.toString())?.name || 'Selected Area'} मेरिट लिस्ट`}
-            {listType === 'area_marks' && `All Candidate Marks list (${areas.find(a => a.id.toString() === selectedArea.toString())?.name || 'अपना क्षेत्र चुनें'})`}
+            {listType === 'area_merit' && (
+              selectedArea 
+                ? `${areas.find(a => a.id.toString() === selectedArea.toString())?.name || 'Selected Area'} अंक सूची`
+                : 'छत्तीसगढ़ मेरिट लिस्ट'
+            )}
             {!listType && 'Merit List'}
           </h1>
           <table>
             <thead>
               <tr>
+                <th>No.</th>
                 <th>Rank</th>
                 <th>Name</th>
                 <th>Marks</th>
@@ -117,12 +124,15 @@ const MeritListPage = () => {
             <tbody>
               {results.map((item, index) => (
                 <tr key={index} className={item.rank_type === 'overall_merit' ? 'overall-merit' : ''}>
-                  <td className={
-                    item.rank === 1 ? 'gold' :
-                    item.rank === 2 ? 'silver' :
-                    item.rank === 3 ? 'bronze' : ''
-                  }>
-                    {item.rank}
+                  <td className="count">{index + 1}</td>
+                  <td>
+                    <div className={
+                      item.rank === 1 ? 'gold' :
+                      item.rank === 2 ? 'silver' :
+                      item.rank === 3 ? 'bronze' : 'rank-number'
+                    }>
+                      {item.rank}
+                    </div>
                   </td>
                   <td>
                     {item.name}
@@ -131,9 +141,9 @@ const MeritListPage = () => {
                         छत्तीसगढ़ मेरिट {item.rank}
                       </span>
                     )}
-                    {item.rank_type === 'area_rank' && (
+                    {item.rank_type === 'area_rank' && item.rank <= 3 && (
                       <span className={`merit-badge area-rank-${item.rank}`}>
-                        क्षेत्र मेरिट {item.rank}
+                        {item.area_name} मेरिट {item.rank}
                       </span>
                     )}
                   </td>
