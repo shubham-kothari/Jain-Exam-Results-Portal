@@ -8,6 +8,7 @@ const MeritListPage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [listType, setListType] = useState('');
+  const [isMarksView, setIsMarksView] = useState(false);
 
   useEffect(() => {
     // Fetch areas on component mount
@@ -35,6 +36,7 @@ const MeritListPage = () => {
   };
 
   const fetchAreaMeritList = () => {
+    setIsMarksView(false);
     setLoading(true);
     const endpoint = selectedArea 
       ? `${process.env.REACT_APP_API_BASE_URL}/meritlist/area?area_id=${selectedArea}`
@@ -53,6 +55,7 @@ const MeritListPage = () => {
   };
 
   const fetchAreaMarksList = () => {
+    setIsMarksView(true);
     setLoading(true);
     const endpoint = selectedArea 
       ? `${process.env.REACT_APP_API_BASE_URL}/meritlist/area?area_id=${selectedArea}&all=true`
@@ -106,7 +109,9 @@ const MeritListPage = () => {
             {listType === 'छत्तीसगढ़' && 'छत्तीसगढ़ मेरिट लिस्ट'}
             {listType === 'area_merit' && (
               selectedArea 
-                ? `${areas.find(a => a.id.toString() === selectedArea.toString())?.name || 'Selected Area'} अंक सूची`
+                ? `${areas.find(a => a.id.toString() === selectedArea.toString())?.name || 'Selected Area'} ${
+                    isMarksView ? 'अंक सूची' : 'मेरिट लिस्ट'
+                  }`
                 : 'छत्तीसगढ़ मेरिट लिस्ट'
             )}
             {!listType && 'Merit List'}
