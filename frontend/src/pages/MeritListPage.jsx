@@ -128,7 +128,10 @@ const MeritListPage = () => {
             </thead>
             <tbody>
               {results.map((item, index) => (
-                <tr key={index} className={item.rank_type === 'overall_merit' ? 'overall-merit' : ''}>
+                <tr key={index} className={
+                  item.rank_type === 'overall_merit' ? 'overall-merit' :
+                  item.rank_type === 'area_rank' && item.rank <= 3 ? 'area-rank-high' : ''
+                }>
                   <td className="count">{index + 1}</td>
                   <td>
                     <div className={
