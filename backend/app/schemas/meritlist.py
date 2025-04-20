@@ -8,7 +8,7 @@ class MeritListResponse(BaseModel):
     rank: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class AreaMeritListResponse(BaseModel):
     name: str
@@ -16,7 +16,7 @@ class AreaMeritListResponse(BaseModel):
     rank: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class AreaMarksListResponse(BaseModel):
     name: str
@@ -24,4 +24,4 @@ class AreaMarksListResponse(BaseModel):
     rank: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
