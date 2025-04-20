@@ -127,8 +127,11 @@
 
   h1 {
     text-align: center;
-    margin-bottom: 30px;
+    margin: 0 0 20px 0;
+    padding: 0;
     color: #333;
+    font-size: 1.5rem;
+    line-height: 1.2;
   }
 
   .controls {
@@ -234,9 +237,10 @@
       }
 
       td.count {
-        opacity: 0.6;
+        opacity: 0.3;
         text-align: center;
         font-size: 0.9em;
+        color: #666;
       }
 
       td {
@@ -293,17 +297,17 @@
     color: #000;
   }
 
-  /* Area rank badges */
+  /* Area rank badges - matching medal colors */
   &.area-rank-1 {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #FFD700;
+    color: #000;
   }
   &.area-rank-2 {
-    background-color: #8BC34A;
+    background-color: #C0C0C0;
     color: #000;
   }
   &.area-rank-3 {
-    background-color: #CDDC39;
+    background-color: #CD7F32;
     color: #000;
   }
 }
