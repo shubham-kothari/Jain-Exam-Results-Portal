@@ -84,11 +84,11 @@ const MeritListPage = () => {
               ))}
             </select>
             <div className="area-buttons">
-              <button onClick={fetchAreaMeritList}>
-                {selectedArea ? 'Show Area Top 3' : 'Show Overall Top 3'}
+              <button onClick={fetchAreaMeritList} className="merit-button">
+                {selectedArea ? `${areas.find(a => a.id.toString() === selectedArea.toString())?.name || 'Area'} मेरिट लिस्ट` : 'छत्तीसगढ़ मेरिट लिस्ट'}
               </button>
-              <button onClick={fetchAreaMarksList}>
-                Show Marks Sheet
+              <button onClick={fetchAreaMarksList} className="marks-button">
+                {selectedArea ? `${areas.find(a => a.id.toString() === selectedArea.toString())?.name || 'Area'} अंक सूची देखें` : 'छत्तीसगढ़ अंक सूची देखें'}
               </button>
             </div>
           </div>
