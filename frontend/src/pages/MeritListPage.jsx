@@ -116,13 +116,22 @@ const MeritListPage = () => {
             </thead>
             <tbody>
               {results.map((item, index) => (
-                <tr key={index}>
+                <tr key={index} className={item.rank_type === 'overall_merit' ? 'overall-merit' : ''}>
                   <td className={
                     item.rank === 1 ? 'gold' :
                     item.rank === 2 ? 'silver' :
                     item.rank === 3 ? 'bronze' : ''
-                  }>{item.rank}</td>
-                  <td>{item.name}</td>
+                  }>
+                    {item.rank}
+                  </td>
+                  <td>
+                    {item.name}
+                    {item.rank_type === 'overall_merit' && (
+                      <span className={`merit-badge rank-${item.rank}`}>
+                        छत्तीसगढ़ मेरिट {item.rank}
+                      </span>
+                    )}
+                  </td>
                   <td>{item.marks}</td>
                   {item.area_name && <td>{item.area_name}</td>}
                 </tr>

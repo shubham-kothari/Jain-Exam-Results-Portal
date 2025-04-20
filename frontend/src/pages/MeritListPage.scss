@@ -246,3 +246,36 @@
     }
   }
 }
+
+/* Overall Merit Styling */
+.overall-merit {
+  background-color: #fff8e1;
+  font-weight: bold;
+  
+  td {
+    border-bottom: 2px solid #ffd54f;
+  }
+}
+
+.merit-badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  vertical-align: middle;
+  
+  &.rank-1 {
+    background-color: #FFD700;
+    color: #000;
+  }
+  &.rank-2 {
+    background-color: #C0C0C0;
+    color: #000;
+  }
+  &.rank-3 {
+    background-color: #CD7F32;
+    color: #000;
+  }
+}

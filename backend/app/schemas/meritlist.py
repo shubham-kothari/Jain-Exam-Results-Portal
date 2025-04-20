@@ -14,6 +14,7 @@ class AreaMeritListResponse(BaseModel):
     name: str
     marks: int
     rank: int
+    rank_type: str  # Either "overall_merit" or "area_rank"
 
     class Config:
         from_attributes = True
