@@ -26,7 +26,7 @@ const MeritListPage = () => {
       .then(response => {
         setResults(response.data);
         setLoading(false);
-        setListType('overall');
+        setListType('छ. ग.');
       })
       .catch(error => {
         console.error('Error fetching overall merit list:', error);
@@ -35,16 +35,19 @@ const MeritListPage = () => {
   };
 
   const fetchAreaMeritList = () => {
-    if (!selectedArea) return;
     setLoading(true);
-    axios.get(`${process.env.REACT_APP_API_BASE_URL}/meritlist/area?area_id=${selectedArea}`)
+    const endpoint = selectedArea 
+      ? `${process.env.REACT_APP_API_BASE_URL}/meritlist/area?area_id=${selectedArea}`
+      : `${process.env.REACT_APP_API_BASE_URL}/meritlist/overall`;
+      
+    axios.get(endpoint)
       .then(response => {
         setResults(response.data);
         setLoading(false);
-        setListType('area_merit');
+        setListType(selectedArea ? 'area_merit' : 'छत्तीसगढ़');
       })
       .catch(error => {
-        console.error('Error fetching area merit list:', error);
+        console.error('Error fetching merit list:', error);
         setLoading(false);
       });
   };
@@ -66,28 +69,14 @@ const MeritListPage = () => {
 
   return (
     <div className="merit-list-page">
-      <h1>
-        {listType === 'overall' && 'Overall Top 3 Candidates'}
-        {listType === 'area_merit' && `${areas.find(a => a.id.toString() === selectedArea.toString())?.name || 'Selected Area'} Top 3 Candidates`}
-        {listType === 'area_marks' && `All Candidate Marks list (${areas.find(a => a.id.toString() === selectedArea.toString())?.name || 'Selected Area'})`}
-        {!listType && 'Merit List'}
-      </h1>
-      
       <div className="controls">
-        <div className="overall-section">
-          <button onClick={fetchOverallMeritList}>
-            Show Overall Top 3 Candidates
-          </button>
-        </div>
-
         <div className="area-controls">
-          <h3>Area-Specific Lists</h3>
           <div className="area-selection">
             <select 
               value={selectedArea} 
               onChange={(e) => setSelectedArea(e.target.value)}
             >
-              <option value="">Select Area</option>
+              <option value="">छत्तीसगढ़</option>
               {areas.map(area => (
                 <option key={area.id} value={area.id}>
                   {area.name}
@@ -96,7 +85,7 @@ const MeritListPage = () => {
             </select>
             <div className="area-buttons">
               <button onClick={fetchAreaMeritList}>
-                Show Top 3
+                {selectedArea ? 'Show Area Top 3' : 'Show Overall Top 3'}
               </button>
               <button onClick={fetchAreaMarksList}>
                 Show Marks Sheet
@@ -110,6 +99,12 @@ const MeritListPage = () => {
         <div className="loading">Loading...</div>
       ) : (
         <div className="results">
+          <h1>
+            {listType === 'छत्तीसगढ़' && 'छत्तीसगढ़ मेरिट लिस्ट'}
+            {listType === 'area_merit' && `${areas.find(a => a.id.toString() === selectedArea.toString())?.name || 'Selected Area'} मेरिट लिस्ट`}
+            {listType === 'area_marks' && `All Candidate Marks list (${areas.find(a => a.id.toString() === selectedArea.toString())?.name || 'अपना क्षेत्र चुनें'})`}
+            {!listType && 'Merit List'}
+          </h1>
           <table>
             <thead>
               <tr>
@@ -122,7 +117,11 @@ const MeritListPage = () => {
             <tbody>
               {results.map((item, index) => (
                 <tr key={index}>
-                  <td>{item.rank}</td>
+                  <td className={
+                    item.rank === 1 ? 'gold' :
+                    item.rank === 2 ? 'silver' :
+                    item.rank === 3 ? 'bronze' : ''
+                  }>{item.rank}</td>
                   <td>{item.name}</td>
                   <td>{item.marks}</td>
                   {item.area_name && <td>{item.area_name}</td>}
