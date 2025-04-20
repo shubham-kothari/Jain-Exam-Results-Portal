@@ -148,6 +148,24 @@ async def get_area_marks_list(
     if not area:
         raise HTTPException(status_code=404, detail="Area not found")
 
+    # Get top 3 overall performers
+    overall_top = db.query(
+        Result.name,
+        Result.marks
+    ).order_by(
+        Result.marks.desc()
+    ).limit(3).all()
+
+    # Get top 3 area performers
+    area_top = db.query(
+        Result.name,
+        Result.marks
+    ).filter(
+        Result.area_id == area_id
+    ).order_by(
+        Result.marks.desc()
+    ).limit(3).all()
+
     # Get all results for this area ordered by marks descending
     results = db.query(
         Result.name,
@@ -169,10 +187,19 @@ async def get_area_marks_list(
             rank += 1
         if result.marks not in marks_to_rank:
             marks_to_rank[result.marks] = rank
+        
+        # Determine rank type
+        rank_type = None
+        if any(om.name == result.name and om.marks == result.marks for om in overall_top):
+            rank_type = 'overall_merit'
+        elif any(am.name == result.name and am.marks == result.marks for am in area_top):
+            rank_type = 'area_rank'
+        
         ranked_results.append({
             'name': result.name,
             'marks': result.marks,
-            'rank': marks_to_rank[result.marks]
+            'rank': marks_to_rank[result.marks],
+            'rank_type': rank_type
         })
         prev_marks = result.marks
 

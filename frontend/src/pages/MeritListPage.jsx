@@ -131,6 +131,11 @@ const MeritListPage = () => {
                         छत्तीसगढ़ मेरिट {item.rank}
                       </span>
                     )}
+                    {item.rank_type === 'area_rank' && (
+                      <span className={`merit-badge area-rank-${item.rank}`}>
+                        क्षेत्र मेरिट {item.rank}
+                      </span>
+                    )}
                   </td>
                   <td>{item.marks}</td>
                   {item.area_name && <td>{item.area_name}</td>}

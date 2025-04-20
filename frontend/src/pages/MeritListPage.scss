@@ -266,6 +266,7 @@
   margin-left: 8px;
   vertical-align: middle;
   
+  /* Overall merit badges */
   &.rank-1 {
     background-color: #FFD700;
     color: #000;
@@ -276,6 +277,20 @@
   }
   &.rank-3 {
     background-color: #CD7F32;
+    color: #000;
+  }
+
+  /* Area rank badges */
+  &.area-rank-1 {
+    background-color: #4CAF50;
+    color: white;
+  }
+  &.area-rank-2 {
+    background-color: #8BC34A;
+    color: #000;
+  }
+  &.area-rank-3 {
+    background-color: #CDDC39;
     color: #000;
   }
 }

@@ -21,8 +21,9 @@ class AreaMeritListResponse(BaseModel):
 
 class AreaMarksListResponse(BaseModel):
     name: str
-    marks: int
+    marks: float
     rank: int
+    rank_type: Optional[str] = None
 
     class Config:
         from_attributes = True
