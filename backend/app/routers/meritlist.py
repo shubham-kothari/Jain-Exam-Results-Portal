@@ -94,7 +94,8 @@ async def get_area_merit_list(
                 'name': result.name,
                 'marks': result.marks,
                 'rank': overall_rank_map[result.name],
-                'rank_type': 'overall_merit'
+                'rank_type': 'overall_merit',
+                'area_name': area.name
             })
         else:
             area_candidates.append({
@@ -117,7 +118,8 @@ async def get_area_merit_list(
             'name': candidate['name'],
             'marks': candidate['marks'],
             'rank': marks_to_rank[candidate['marks']],
-            'rank_type': 'area_rank'
+            'rank_type': 'area_rank',
+            'area_name': area.name
         })
         prev_marks = candidate['marks']
 

@@ -143,7 +143,7 @@ const MeritListPage = () => {
                     {item.name}
                     {item.rank_type === 'overall_merit' && (
                       <span className={`merit-badge rank-${item.rank}`}>
-                        छत्तीसगढ़ मेरिट {item.rank}
+                        छ. ग. मेरिट {item.rank}
                       </span>
                     )}
                     {item.rank_type === 'area_rank' && item.rank <= 3 && (
