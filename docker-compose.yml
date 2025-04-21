@@ -1,24 +1,33 @@
 services:
-  frontend:
+  jain_exam_results_portal_frontend:
+    
+    container_name: jain_exam_results_portal_frontend
+    image: jain_exam_results_portal_frontend
+
     build:
       context: ./frontend
       dockerfile: Dockerfile.frontend
     ports:
       - "20020:3000"
     depends_on:
-      - backend
+      - jain_exam_results_portal_backend
     environment:
       - REACT_APP_API_BASE_URL=https://api.kotharicomputers.com
       # - REACT_APP_API_BASE_URL_LOCAL=http://localhost:8002
     volumes:
       - ./frontend:/app
       
-  backend:
+  jain_exam_results_portal_backend:
+    container_name: jain_exam_results_portal_backend
+    image: jain_exam_results_portal_backend
+    
     build:
       context: ./backend
       dockerfile: Dockerfile.backend
+    
     ports:
       - "8002:8002"
+    
     volumes:
       - ./backend:/app
 
