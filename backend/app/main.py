@@ -17,7 +17,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(cities.router)
 app.include_router(data.router)
-app.include_router(certificate.router)
+# app.include_router(certificate.router)
 app.include_router(meritlist.router)
 
 # Create database tables

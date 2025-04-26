@@ -8,7 +8,7 @@ const CertificatePage = () => {
   const [candidates, setCandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [pdfUrl, setPdfUrl] = useState('');
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Fetch cities on component mount
@@ -42,24 +42,24 @@ const CertificatePage = () => {
     }
   }, [selectedCity]);
 
-  const handleGenerateCertificate = async () => {
-    if (!selectedCandidate) return;
+  // const handleGenerateCertificate = async () => {
+  //   if (!selectedCandidate) return;
 
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/certificate/generate?name=${encodeURIComponent(selectedCandidate.name)}&marks=${selectedCandidate.marks}`,
-        { method: 'POST' }
-      );
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      setPdfUrl(url);
-    } catch (error) {
-      console.error('Error generating certificate:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch(
+  //       `${process.env.REACT_APP_API_BASE_URL}/certificate/generate?name=${encodeURIComponent(selectedCandidate.name)}&marks=${selectedCandidate.marks}`,
+  //       { method: 'POST' }
+  //     );
+  //     const blob = await response.blob();
+  //     const url = URL.createObjectURL(blob);
+  //     setPdfUrl(url);
+  //   } catch (error) {
+  //     console.error('Error generating certificate:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="certificate-page">
@@ -125,7 +125,7 @@ const CertificatePage = () => {
               <td>{selectedCandidate.area}</td>
             </tbody>
           </table>
-          {!pdfUrl ? (
+          {/* {!pdfUrl ? (
             <div className='certificate-button'>
               <button
                 onClick={handleGenerateCertificate}
@@ -152,7 +152,7 @@ const CertificatePage = () => {
                 प्रमाणपत्र डाउनलोड करें
               </button>
             </div>
-          )}
+          )} */}
         </div>
       )}
 

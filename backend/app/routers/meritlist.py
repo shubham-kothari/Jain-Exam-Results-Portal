@@ -13,45 +13,34 @@ router = APIRouter(
 )
 
 @router.get("/overall", response_model=List[MeritListResponse])
-async def get_overall_merit_list(limit: int = 3, db: Session = Depends(get_db)):
+async def get_overall_merit_list(db: Session = Depends(get_db)):
     """
-    Get overall merit list (top performers across all areas)
-    Returns top N ranks where candidates with same marks get same rank
+    Get overall merit list (only candidates with 100 marks)
+    All candidates with 100 marks will be ranked as 1
+    Returns all qualifying candidates without limit
     """
-    # Get all results ordered by marks descending with area name
+    # Get all results with 100 marks ordered by name with area name
     results = db.query(
         Result.name,
         Result.marks,
         City.name.label('area_name')
     ).join(
         City, Result.area_id == City.id
+    ).filter(
+        Result.marks == 100
     ).order_by(
-        Result.marks.desc()
+        Result.name
     ).all()
 
-    # Calculate ranks (same marks get same rank)
-    ranked_results = []
-    rank = 1
-    prev_marks = None
-    marks_to_rank = {}
-    
-    for result in results:
-        if prev_marks is not None and result.marks != prev_marks:
-            rank += 1
-        if result.marks not in marks_to_rank:
-            marks_to_rank[result.marks] = rank
-        ranked_results.append({
-            'name': result.name,
-            'marks': result.marks,
-            'area_name': result.area_name,
-            'rank': marks_to_rank[result.marks]
-        })
-        prev_marks = result.marks
+    # Assign rank 1 to all candidates
+    ranked_results = [{
+        'name': result.name,
+        'marks': result.marks,
+        'area_name': result.area_name,
+        'rank': 1
+    } for result in results]
 
-    # Get top N unique ranks
-    unique_ranks = sorted({v for v in marks_to_rank.values()})
-    top_ranks = unique_ranks[:limit]
-    return [item for item in ranked_results if item['rank'] in top_ranks]
+    return ranked_results
 
 @router.get("/area", response_model=List[AreaMeritListResponse])
 async def get_area_merit_list(
@@ -69,8 +58,8 @@ async def get_area_merit_list(
     if not area:
         raise HTTPException(status_code=404, detail="Area not found")
 
-    # Get overall top 3 candidates
-    overall_top = await get_overall_merit_list(limit=3, db=db)
+    # Get all candidates with 100 marks (overall top)
+    overall_top = await get_overall_merit_list(db=db)
     overall_names = {item['name'] for item in overall_top}
     overall_rank_map = {item['name']: item['rank'] for item in overall_top}
 
@@ -147,19 +136,21 @@ async def get_area_marks_list(
     """
     Get complete marks list for an area (all candidates sorted by marks)
     Returns all candidates with ranks where same marks get same rank
+    overall_top will only show candidates with 100 marks (rank 1)
+    area_top will remain same
     """
     # Verify area exists
     area = db.query(City).filter(City.id == area_id).first()
     if not area:
         raise HTTPException(status_code=404, detail="Area not found")
 
-    # Get top 3 overall performers
+    # Get all candidates with 100 marks (overall top)
     overall_top = db.query(
         Result.name,
         Result.marks
-    ).order_by(
-        Result.marks.desc()
-    ).limit(3).all()
+    ).filter(
+        Result.marks == 100
+    ).all()
 
     # Get top 3 area performers
     area_top = db.query(

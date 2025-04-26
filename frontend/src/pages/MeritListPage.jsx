@@ -21,19 +21,19 @@ const MeritListPage = () => {
       });
   }, []);
 
-  const fetchOverallMeritList = () => {
-    setLoading(true);
-    axios.get(`${process.env.REACT_APP_API_BASE_URL}/meritlist/overall`)
-      .then(response => {
-        setResults(response.data);
-        setLoading(false);
-        setListType('छ. ग.');
-      })
-      .catch(error => {
-        console.error('Error fetching overall merit list:', error);
-        setLoading(false);
-      });
-  };
+  // const fetchOverallMeritList = () => {
+  //   setLoading(true);
+  //   axios.get(`${process.env.REACT_APP_API_BASE_URL}/meritlist/overall`)
+  //     .then(response => {
+  //       setResults(response.data);
+  //       setLoading(false);
+  //       setListType('छ. ग.');
+  //     })
+  //     .catch(error => {
+  //       console.error('Error fetching overall merit list:', error);
+  //       setLoading(false);
+  //     });
+  // };
 
   const fetchAreaMeritList = () => {
     setIsMarksView(false);
@@ -146,12 +146,12 @@ const MeritListPage = () => {
                     {item.name}
                     {item.rank_type === 'overall_merit' && (
                       <span className={`merit-badge rank-${item.rank}`}>
-                        छ. ग. मेरिट {item.rank}
+                        छ. ग. मेरिट
                       </span>
                     )}
                     {item.rank_type === 'area_rank' && item.rank <= 3 && (
                       <span className={`merit-badge area-rank-${item.rank}`}>
-                        {item.area_name} मेरिट {item.rank}
+                        {item.area_name} {item.rank}
                       </span>
                     )}
                   </td>
