@@ -16,13 +16,13 @@ function Navbar() {
           to="/" 
           className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
         >
-          Certificate
+          परीक्षा परिणाम
         </NavLink>
         <NavLink 
           to="/meritlist" 
           className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
         >
-          Merit List
+          मेरिट लिस्ट
         </NavLink>
         <NavLink 
           to="/admin" 
