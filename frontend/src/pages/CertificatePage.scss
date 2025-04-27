@@ -1,8 +1,12 @@
 .certificate-page {
   .header-icon {
-    text-align: center;
-    margin: 20px 0;
-    color: #4CAF50;
+
+    display: flex;
+    justify-content: center;
+    img {
+      max-width: 40px;
+      height: 100%;
+    }
   }
 
   max-width: 800px;
@@ -15,6 +19,13 @@
     text-align: center;
     color: #333;
     margin-bottom: 30px;
+  }
+
+  @media(max-width:450px) {
+    h1 {
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
   }
 
   .form-group {
@@ -106,7 +117,7 @@
     border-radius: 4px;
     overflow: hidden;
     width: 100%;
-    
+
     iframe {
       width: 100%;
       max-width: 100%;
@@ -121,7 +132,7 @@
 
     .certificate-page {
       padding: 15px;
-      
+
       h1 {
         font-size: 1.5rem;
         margin-bottom: 20px;
