@@ -10,7 +10,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <span>अखिल भारतीय सुधर्म जैन संस्कृति परीक्षा परिणाम (2025)</span>
+        <span>अखिल भारतीय सुधर्म जैन संस्कृति परीक्षा परिणाम छ. ग.(2025)</span>
       </div>
       <div className="navbar-links">
         <NavLink 
@@ -31,13 +31,6 @@ function Navbar() {
         >
           मेरिट लिस्ट
         </NavLink>
-        <NavLink 
-          to="/admin" 
-          className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
-        >
-          Admin
-        </NavLink>
-        
       </div>
     </nav>
   );
