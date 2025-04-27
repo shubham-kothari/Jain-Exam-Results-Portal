@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CertificatePage.scss';
-import { FaCertificate } from 'react-icons/fa';
+// import { FaCertificate } from 'react-icons/fa';
+import jainLogo from "../logo_jain.png";
 
 const CertificatePage = () => {
   const [cities, setCities] = useState([]);
@@ -64,8 +65,9 @@ const CertificatePage = () => {
   return (
     <div className="certificate-page">
       <div className="header-icon">
-        <FaCertificate size={48} />
-      </div>
+  <img src={jainLogo} alt="Jain Logo" />
+</div>
+
       <h1>णमो णाणस्स</h1>
       <h1>श्री अखिल भारतीय सुधर्म जैन संस्कृति रक्षक संघ छ. ग. शाखा द्वारा आयोजित महावीर जयंती की परीक्षा के परिणाम</h1>
 
