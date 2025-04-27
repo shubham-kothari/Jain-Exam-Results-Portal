@@ -16,6 +16,9 @@ services:
       # - REACT_APP_API_BASE_URL_LOCAL=http://localhost:8002
     volumes:
       - ./frontend:/app
+
+    restart: unless-stopped
+
       
   jain_exam_results_portal_backend:
     container_name: jain_exam_results_portal_backend
@@ -30,4 +33,6 @@ services:
     
     volumes:
       - ./backend:/app
+
+    restart: unless-stopped
 
