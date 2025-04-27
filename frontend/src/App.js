@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-do
 import CertificatePage from './pages/CertificatePage';
 import AdminPage from './pages/AdminPage';
 import MeritListPage from './pages/MeritListPage';
+import AnswerKeyPage from './pages/AnswerKeyPage';
 import './App.css';
 
 function Navbar() {
@@ -19,6 +20,12 @@ function Navbar() {
           परीक्षा परिणाम
         </NavLink>
         <NavLink 
+          to="/answerkey" 
+          className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+        >
+          उत्तर कुंजी
+        </NavLink>
+        <NavLink 
           to="/meritlist" 
           className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
         >
@@ -30,6 +37,7 @@ function Navbar() {
         >
           Admin
         </NavLink>
+        
       </div>
     </nav>
   );
@@ -44,6 +52,7 @@ function App() {
           <Route path="/" element={<CertificatePage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/meritlist" element={<MeritListPage />} />
+          <Route path="/answerkey" element={<AnswerKeyPage />} />
         </Routes>
       </div>
     </Router>

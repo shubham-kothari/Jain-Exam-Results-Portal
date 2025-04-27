@@ -1,0 +1,36 @@
+.answer-key-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h1 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .images-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    img {
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 4px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .answer-key-container {
+    padding: 10px;
+    
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+  }
+}
